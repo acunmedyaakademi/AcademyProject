@@ -1,5 +1,5 @@
 from django import forms
-from apps.core.models import Videos, Classroom
+from apps.core.models import Videos, Classroom, Lessons
 from django.utils.translation import gettext_lazy as _
 
 
@@ -20,3 +20,8 @@ class VideoUpload(forms.ModelForm):
         if user:
             self.fields['classroom'].queryset = Classroom.objects.filter(instructor=user)
 
+
+class StartLessonForm(forms.ModelForm):
+    class Meta:
+        model = Lessons
+        fields = ['classroom']

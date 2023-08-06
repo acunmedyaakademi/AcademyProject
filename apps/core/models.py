@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from autoslug import AutoSlugField
 from ckeditor.fields import RichTextField
+import random
 
 
 # AUTHENTICATE MODELS
@@ -26,58 +27,6 @@ class UsersManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, **extra_fields)
-
-
-class Users(AbstractBaseUser, PermissionsMixin, AbstractDatesModel):
-    GENDERS = [
-        ('Erkek', 'Erkek'),
-        ('Kadın', 'Kadın'),
-        ('Diğer', 'Diğer'),
-    ]
-    student_number = models.CharField(_('Öğrenci Numarası'), max_length=20, unique=True, null=True, blank=True)
-    username = models.CharField(_('Kullanıcı Adı'), max_length=100, unique=True, null=True, blank=True)
-    email = models.EmailField(_('Eposta Adresi'), max_length=150, unique=True)
-    first_name = models.CharField(_('Adı'), max_length=120)
-    last_name = models.CharField(_('Soyadı'), max_length=120)
-    gender = models.CharField(_('Cinsiyet'), max_length=6, choices=GENDERS, null=True, blank=True)
-    avatar = models.ImageField(_('Profil Resmi'), upload_to='avatars/', null=True, blank=True)
-    bio = models.TextField(_('Biyografi'), null=True, blank=True)
-    birth_date = models.DateField(_('Doğum Tarihi'), null=True, blank=True)
-    country = CountryField(_('Ülke'), null=True, blank=True)
-    is_active = models.BooleanField(_('Aktif mi?'), default=True)
-    is_staff = models.BooleanField(_('Personel mi?'), default=False)
-    objects = UsersManager()
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-    force_password_change = models.BooleanField(_('Şifre Değiştirme Gerekliliği'), default=True)
-
-    class Meta:
-        db_table = 'users'
-        verbose_name = 'Üye'
-        verbose_name_plural = 'Üyeler'
-
-    def __str__(self):
-        return self.get_full_name()
-
-    def save(self, *args, **kwargs):
-        if not self.username:
-            self.username = slugify(self.email.split('@')[0])
-
-        # Avatar atanmamışsa varsayılan avatarı atama
-        if not self.avatar:
-            self.avatar = 'default-avatar.jpg'
-        super(Users, self).save(*args, **kwargs)
-
-    def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
-        full_name = "%s %s" % (self.first_name, self.last_name)
-        return full_name.strip()
-
-    def get_short_name(self):
-        """Return the short name for the user."""
-        return self.first_name
 
 
 class CourseCategories(AbstractDatesModel):
@@ -122,8 +71,6 @@ class Classroom(AbstractDatesModel):
     name = models.CharField(_('İsim'), max_length=120)
     course = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name='classrooms', verbose_name=_('Kurs'))
     period = models.ForeignKey(Period, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('Dönem'))
-    instructor = models.ForeignKey(Users, on_delete=models.SET_NULL, related_name='instructor_classrooms', null=True,
-                                   verbose_name=_('Eğitmen'), limit_choices_to={'groups__name': 'Eğitmen'})
 
     class Meta:
         db_table = 'classrooms'
@@ -134,11 +81,94 @@ class Classroom(AbstractDatesModel):
         return f'{self.period} {self.course.name} {self.name}'
 
 
+class Users(AbstractBaseUser, PermissionsMixin, AbstractDatesModel):
+    GENDERS = [
+        ('Erkek', 'Erkek'),
+        ('Kadın', 'Kadın'),
+        ('Diğer', 'Diğer'),
+    ]
+    student_number = models.CharField(_('Öğrenci Numarası'), max_length=20, unique=True, null=True, blank=True)
+    username = models.CharField(_('Kullanıcı Adı'), max_length=100, unique=True, null=True, blank=True)
+    email = models.EmailField(_('Eposta Adresi'), max_length=150, unique=True)
+    first_name = models.CharField(_('Adı'), max_length=120)
+    last_name = models.CharField(_('Soyadı'), max_length=120)
+    gender = models.CharField(_('Cinsiyet'), max_length=6, choices=GENDERS, null=True, blank=True)
+    avatar = models.ImageField(_('Profil Resmi'), upload_to='avatars/', null=True, blank=True)
+    bio = models.TextField(_('Biyografi'), null=True, blank=True)
+    birth_date = models.DateField(_('Doğum Tarihi'), null=True, blank=True)
+    country = CountryField(_('Ülke'), null=True, blank=True)
+    is_active = models.BooleanField(_('Aktif mi?'), default=True)
+    is_staff = models.BooleanField(_('Personel mi?'), default=False)
+    objects = UsersManager()
+    classroom = models.ManyToManyField(Classroom, related_name='users')
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    force_password_change = models.BooleanField(_('Şifre Değiştirme Gerekliliği'), default=True)
+
+    class Meta:
+        db_table = 'users'
+        verbose_name = 'Üye'
+        verbose_name_plural = 'Üyeler'
+
+    def __str__(self):
+        return self.get_full_name()
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = slugify(self.email.split('@')[0])
+
+        # Avatar atanmamışsa varsayılan avatarı atama
+        if not self.avatar:
+            self.avatar = 'default-avatar.jpg'
+        super(Users, self).save(*args, **kwargs)
+
+    def get_full_name(self):
+        """
+        Return the first_name plus the last_name, with a space in between.
+        """
+        full_name = "%s %s" % (self.first_name, self.last_name)
+        return full_name.strip()
+
+    def get_short_name(self):
+        """Return the short name for the user."""
+        return self.first_name
+
+
+class Lessons(AbstractDatesModel):
+    lesson_code = models.CharField(_('Ders Kodu'), max_length=120, editable=False, null=True, blank=True)
+    instructor = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='lessons', null=True, blank=True)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='lessons')
+
+    def save(self, *args, **kwargs):
+        if not self.lesson_code:
+            self.lesson_code = f'{self.classroom.name[0:2]}-{random.randint(1, 999999)}'
+        super(Lessons, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.classroom.name} {self.instructor.get_full_name()}'
+
+    class Meta:
+        db_table = 'lessons'
+        verbose_name = 'Ders'
+        verbose_name_plural = 'Dersler'
+
+
+class AttendanceModel(AbstractDatesModel):
+    lesson = models.ForeignKey(Lessons, on_delete=models.CASCADE, related_name='attendances')
+    student = models.ManyToManyField(Users, related_name='st_attendances')
+
+    class Meta:
+        db_table = 'attendances'
+        verbose_name = 'Yoklama'
+        verbose_name_plural = 'Yoklamalar'
+
+
 class Videos(AbstractDatesModel):
     title = models.CharField(_('Başlık'), max_length=120)
     slug = AutoSlugField(null=True, blank=True, populate_from='title', unique=True)
     description = RichTextField(_('Açıklama'), null=True)
-    video_file = models.FileField(_('Video Dosyası'), upload_to='videos/', validators=[validate_file_extension], null=True, blank=True)
+    video_file = models.FileField(_('Video Dosyası'), upload_to='videos/', validators=[validate_file_extension],
+                                  null=True, blank=True)
     video_url = models.CharField(_('Video URL'), max_length=200, null=True, blank=True)
     link = models.URLField(_('Link'), null=True, blank=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='videos', default=1,

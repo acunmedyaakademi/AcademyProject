@@ -1,0 +1,10 @@
+{% extends 'user/alt_base.html' %}
+{% block title %}
+    YOKLAMA
+{% endblock %}
+{% block content %}
+    {{ attendance.student.count }} Kişi yoklamaya katıldı <br>
+    {% for student in attendance.student.all %}
+        {{ student }} <br>
+    {% endfor %}
+{% endblock %}

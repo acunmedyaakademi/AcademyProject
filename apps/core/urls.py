@@ -32,6 +32,8 @@ urlpatterns = [
             path('video-upload/', instructors.video_upload, name='video_upload'),
             path('video-edit/<slug:slug>/', instructors.video_edit, name='video_edit'),
             path('video-delete/<int:pk>/', instructors.video_delete, name='video_delete'),
+            path('start-lesson/<int:pk>/', instructors.start_lesson, name='start_lesson'),
+            path('finish-attendance/<int:pk>/', instructors.finish_attendance, name='finish_attendance'),
         ])),
         # VIDEOS URLS
         path('videos/', include([
