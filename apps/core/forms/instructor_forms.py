@@ -1,5 +1,5 @@
 from django import forms
-from apps.core.models import Videos, Classroom, Lessons
+from apps.core.models import Videos, Classroom, Lessons, MissionModel
 from django.utils.translation import gettext_lazy as _
 
 
@@ -25,3 +25,17 @@ class StartLessonForm(forms.ModelForm):
     class Meta:
         model = Lessons
         fields = ['classroom']
+
+
+class MissionForm(forms.ModelForm):
+    classroom = forms.ModelChoiceField(queryset=Classroom.objects.none(), label=_('Sınıf'))
+
+    class Meta:
+        model = MissionModel
+        fields = ('title', 'description', 'start_date', 'end_date', 'classroom')
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['classroom'].queryset = Classroom.objects.filter(instructor=user)

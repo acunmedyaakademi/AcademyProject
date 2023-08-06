@@ -1,0 +1,10 @@
+{% extends 'user/alt_base.html' %}
+{% load crispy_forms_filters %}
+{% block title %}
+    Görev Ekle
+{% endblock %}
+
+{% block content %}
+    {{ form.media }}
+    {{ form|crispy }}
+{% endblock %}

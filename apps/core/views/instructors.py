@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from apps.core.decorators import group_required
-from apps.core.forms.instructor_forms import VideoUpload
+from apps.core.forms.instructor_forms import VideoUpload, MissionForm
 from django.contrib import messages
 from apps.core.models import Users
 from django.conf import settings
 from apps.core.models import Classroom, AttendanceModel, Lessons
 import requests
 from django.http import QueryDict
+
 
 @login_required()
 def instructor_list(request):
@@ -44,6 +45,7 @@ def start_lesson(request, pk):
         'students': students
     })
 
+
 @login_required()
 @group_required('Eğitmen')
 def finish_attendance(request, pk):
@@ -51,6 +53,36 @@ def finish_attendance(request, pk):
     return render(request, 'user/instructors/finish_attendance.html', {
         'attendance': attendance
     })
+
+
+@login_required()
+@group_required('Eğitmen')
+def mission_add(request):
+    if request.method == 'POST':
+        form = MissionForm(request.POST)
+        if form.is_valid():
+            mission = form.save(commit=False)
+            mission.instructor = request.user
+            mission.save()
+            messages.success(request, 'Görev başarıyla oluşturuldu')
+            return redirect('homepage')
+    else:
+        form = MissionForm()
+    return render(request, 'user/instructors/add_mission.html', {
+        'form': form
+    })
+
+
+@login_required()
+@group_required('Eğitmen')
+def mission_delete(request):
+    pass
+
+@login_required()
+@group_required('Eğitmen')
+def mission_edit(request):
+    pass
+
 
 @login_required()
 @group_required('Eğitmen')

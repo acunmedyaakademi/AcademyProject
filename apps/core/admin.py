@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import Users, Videos, VideoComments, Courses, Classroom, Period, CourseCategories, Lessons
+from .models import Users, Videos, VideoComments, Courses, Classroom, Period, CourseCategories, Lessons, MissionModel
 
 
 @admin.register(Users)
@@ -28,5 +28,6 @@ admin.site.register(VideoComments)
 admin.site.register(Courses)
 admin.site.register(CourseCategories)
 admin.site.register(Lessons)
+admin.site.register(MissionModel)
 admin.site.register(Classroom)
 admin.site.register(Period)

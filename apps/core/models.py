@@ -217,3 +217,26 @@ class VideoFavorites(AbstractDatesModel):
 
     def __str__(self):
         return self.user.get_full_name()
+
+
+class MissionModel(AbstractDatesModel):
+    title = models.CharField(max_length=200)
+    description = RichTextField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='missions')
+    instructor = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='given_missions',
+                                   limit_choices_to={'groups__name': 'Eğitmen'})
+
+    class Meta:
+        db_table = 'missions'
+        verbose_name = 'Görev'
+        verbose_name_plural = 'Görevler'
+
+    def __str__(self):
+        return f'{self.title} - {self.classroom.name}'
+
+    def __unicode__(self):
+        return f'{self.title} - {self.classroom.name}'
+
+
