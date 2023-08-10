@@ -93,6 +93,13 @@ def profile(request):
     })
 
 
+def profile_detail(request, slug):
+    user = get_object_or_404(Users, slug=slug)
+    return render(request, 'user/users/profile.html', {
+        'user': user
+    })
+
+
 @login_required()
 def profile_update(request):
     user = request.user
@@ -130,4 +137,11 @@ def favorite_videos(request):
     return render(request, 'user/users/favorite_videos.html', {
         'user': user,
         'user_favorites': user_favorites
+    })
+
+
+def user_list_page(request):
+    users = Users.objects.all()
+    return render(request, 'user/users/list.html', {
+        'users': users
     })

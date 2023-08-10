@@ -31,6 +31,7 @@ class UsersManager(BaseUserManager):
 
 class CourseCategories(AbstractDatesModel):
     name = models.CharField(_('İsim'), max_length=120)
+    slug = AutoSlugField(null=True, populate_from='name', unique=True, editable=False)
 
     class Meta:
         db_table = 'course_categories'
@@ -43,6 +44,7 @@ class CourseCategories(AbstractDatesModel):
 
 class Courses(AbstractDatesModel):
     name = models.CharField(_('İsim'), max_length=120)
+    slug = AutoSlugField(null=True, populate_from='name', unique=True, editable=False)
     category = models.ForeignKey(CourseCategories, on_delete=models.SET_NULL, null=True, blank=True,
                                  verbose_name=_('Kurs Kategorisi'))
 
@@ -57,6 +59,7 @@ class Courses(AbstractDatesModel):
 
 class Period(AbstractDatesModel):
     name = models.CharField(_('İsim'), max_length=120)
+    slug = AutoSlugField(null=True, populate_from='name', unique=True, editable=False)
 
     class Meta:
         db_table = 'periods'
@@ -69,6 +72,7 @@ class Period(AbstractDatesModel):
 
 class Classroom(AbstractDatesModel):
     name = models.CharField(_('İsim'), max_length=120)
+    slug = AutoSlugField(null=True, populate_from='name', unique=True, editable=False)
     course = models.ForeignKey(Courses, on_delete=models.CASCADE, related_name='classrooms', verbose_name=_('Kurs'))
     period = models.ForeignKey(Period, on_delete=models.SET_NULL, null=True, blank=True, verbose_name=_('Dönem'))
 
@@ -89,6 +93,7 @@ class Users(AbstractBaseUser, PermissionsMixin, AbstractDatesModel):
     ]
     student_number = models.CharField(_('Öğrenci Numarası'), max_length=20, unique=True, null=True, blank=True)
     username = models.CharField(_('Kullanıcı Adı'), max_length=100, unique=True, null=True, blank=True)
+    slug = AutoSlugField(null=True, populate_from='username', unique=True, editable=False)
     email = models.EmailField(_('Eposta Adresi'), max_length=150, unique=True)
     first_name = models.CharField(_('Adı'), max_length=120)
     last_name = models.CharField(_('Soyadı'), max_length=120)
@@ -135,7 +140,7 @@ class Users(AbstractBaseUser, PermissionsMixin, AbstractDatesModel):
 
 
 class Lessons(AbstractDatesModel):
-    lesson_code = models.CharField(_('Ders Kodu'), max_length=120, editable=False, null=True, blank=True)
+    lesson_code = models.CharField(_('Ders Kodu'), max_length=120, editable=False, null=True, blank=True, unique=True)
     instructor = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='lessons', null=True, blank=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='lessons')
 
@@ -222,6 +227,7 @@ class VideoFavorites(AbstractDatesModel):
 class MissionModel(AbstractDatesModel):
     title = models.CharField(max_length=200)
     description = RichTextField()
+    slug = AutoSlugField(null=True, populate_from='title', unique=True, editable=False)
     start_date = models.DateField()
     end_date = models.DateField()
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='missions')
@@ -240,3 +246,18 @@ class MissionModel(AbstractDatesModel):
         return f'{self.title} - {self.classroom.name}'
 
 
+class MissionSubmissionsModel(AbstractDatesModel):
+    student = models.ForeignKey(Users, related_name='completed_missions', on_delete=models.CASCADE,
+                                limit_choices_to={'groups__name': 'Öğrenci'})
+    mission = models.ForeignKey(MissionModel, on_delete=models.CASCADE, related_name='submissions')
+    url = models.URLField()
+    class Meta:
+        db_table = 'mission_submissions'
+        verbose_name = 'Görevi Tamamlayan'
+        verbose_name_plural = 'Görevi Tamamlayanlar'
+
+    def __str__(self):
+        return f'{self.mission.title} - {self.student.get_full_name()}'
+
+    def __unicode__(self):
+        return f'{self.mission.title} - {self.student.get_full_name()}'

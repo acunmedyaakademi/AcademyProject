@@ -1,5 +1,5 @@
 from django import template
-from apps.core.models import Users, Videos
+from apps.core.models import Users, Videos, MissionSubmissionsModel
 from django.template.defaultfilters import stringfilter
 import re
 from urllib.parse import urlparse
@@ -39,3 +39,12 @@ def video_embed(value):
     query = urlparse(url_data.query)
     url = query.path.replace('v=', '')
     return 'https://youtube.com/embed/' + url
+
+
+@register.filter(name='check_student_submission')
+def check_student_submission(student, mission):
+    return MissionSubmissionsModel.objects.filter(mission=mission, student=student).exists()
+
+@register.filter(name='get_submission_info')
+def get_submission_info(student, mission):
+    return MissionSubmissionsModel.objects.get(mission=mission, student=student) if MissionSubmissionsModel.objects.filter(mission=mission, student=student).exists() else 'Tamamlanmadı'

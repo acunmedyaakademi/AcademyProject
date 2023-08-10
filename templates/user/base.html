@@ -2,45 +2,105 @@
 {% load site_settings %}
 {% get_general_settings as general_settings %}
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ general_settings.site_description }}">
-    <meta name="keywords" content="{{ general_settings.site_keywords }}">
-    <meta name="author" content="{{ general_settings.site_author }}">
-    <title>{% block title %}{% endblock %}</title>
-    <link href="{% static 'user/css/flowbite.min.css' %}" rel="stylesheet">
-    <link href="{% static 'base/css/toastr.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'base/webfont/tabler-icons.min.css' %}">
-    {% block css_files %}{% endblock %}
+<html lang="en"
+      dir="ltr">
 
-</head>
-<body class="bg-gray-100 dark:bg-gray-800">
-    {% block header %}{% endblock %}
-    {% if request.user.force_password_change %}
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible"
+              content="IE=edge">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}{% endblock %}</title>
 
-        <div id="informational-banner" tabindex="-1" class="sticky-top top-0 left-0 z-50 flex flex-col justify-between w-full p-4 border-b border-gray-200 md:flex-row bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-            <div class="mb-4 md:mb-0 md:mr-4">
-                <h2 class="mb-1 text-base font-semibold text-gray-900 dark:text-white">Şifre Değişikliği Gerekiyor!</h2>
-                <p class="flex items-center text-sm font-normal text-gray-500 dark:text-gray-400">Sistem tarafından oluşturan varsayılan şifreyi kullanıyorsunuz, lütfen şifrenizi güncelleyiniz</p>
-            </div>
-            <div class="flex items-center flex-shrink-0">
-{#                <a href="#" class="inline-flex items-center px-3 py-2 mr-3 text-xs font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"><svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"></path></svg> Learn more</a>#}
-                <a href="{% url 'force_password_change' %}" class="inline-flex px-3 py-2 mr-2 text-xs font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Şifreyi Sıfırla <svg class="h-4 w-4 ml-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path clip-rule="evenodd" fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"></path></svg></a>
+        <!-- Prevent the demo from appearing in search engines -->
+        <meta name="robots"
+              content="noindex">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700%7CRoboto:400,500%7CExo+2:600&display=swap"
+              rel="stylesheet">
+
+        <!-- Preloader -->
+        <link type="text/css"
+              href="{% static 'user/vendor/spinkit.css' %}"
+              rel="stylesheet">
+
+        <!-- Perfect Scrollbar -->
+        <link type="text/css"
+              href="{% static 'user/vendor/perfect-scrollbar.css' %}"
+              rel="stylesheet">
+
+        <!-- Material Design Icons -->
+        <link type="text/css"
+              href="{% static 'user/css/material-icons.css' %}"
+              rel="stylesheet">
+
+        <!-- Font Awesome Icons -->
+        <link type="text/css"
+              href="{% static 'user/css/fontawesome.css' %}"
+              rel="stylesheet">
+
+        <!-- Preloader -->
+        <link type="text/css"
+              href="{% static 'user/css/preloader.css' %}"
+              rel="stylesheet">
+
+        <!-- App CSS -->
+        <link type="text/css"
+              href="{% static 'user/css/app.css' %}"
+              rel="stylesheet">
+
+        <!-- Dark Mode CSS -->
+        <link type="text/css"
+              href="{% static 'user/css/dark.css' %}"
+              rel="stylesheet">
+
+    </head>
+
+    <body class="layout-app ">
+
+        <div class="preloader">
+            <div class="sk-chase">
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
+                <div class="sk-chase-dot"></div>
             </div>
         </div>
+    <div class="mdk-header-layout__content page-content ">
 
-    {% endif %}
-    <div class="container mx-auto">
-        {% block content %}{% endblock %}
+                <div class="mdk-box mdk-box--bg-white-35 bg-white js-mdk-box mb-0"
+                     data-effects="parallax-background blend-background">
+                {% block header %}{% endblock %}
+                {% block content %}{% endblock %}
+                {% block footer %}{% endblock %}
+            </div>
+
     </div>
-    {% block footer %}{% endblock %}
-    <script src="{% static 'user/js/flowbite.min.js' %}"></script>
-    <script src="{% static 'user/js/darklight.js' %}"></script>
-    <script src="{% static 'user/js/jquery.min.js' %}"></script>
-    <script src="{% static 'user/js/datepicker.min.js' %}"></script>
+    {% block drawer %}{% endblock %}
+    <!-- jQuery -->
+    <script src="{% static 'user/vendor/jquery.min.js' %}"></script>
+
+    <!-- Bootstrap -->
+    <script src="{% static 'user/vendor/popper.min.js' %}"></script>
+    <script src="{% static 'user/vendor/bootstrap.min.js' %}"></script>
+
+    <!-- Perfect Scrollbar -->
+    <script src="{% static 'user/vendor/perfect-scrollbar.min.js' %}"></script>
+
+    <!-- DOM Factory -->
+    <script src="{% static 'user/vendor/dom-factory.js' %}"></script>
+
+    <!-- MDK -->
+    <script src="{% static 'user/vendor/material-design-kit.js' %}"></script>
+
+    <!-- App JS -->
+    <script src="{% static 'user/js/app.js' %}"></script>
+
+    <!-- Preloader -->
+    <script src="{% static 'user/js/preloader.js' %}"></script>
     <script src="{% static 'base/js/toastr.min.js' %}"></script>
     {% block js_files %}{% endblock %}
     {% if messages %}

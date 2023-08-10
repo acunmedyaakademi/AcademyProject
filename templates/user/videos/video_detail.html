@@ -1,211 +1,418 @@
 {% extends 'user/alt_base.html' %}
 {% load general %}
+{% load i18n %}
 {% block title %}
     {{ video.title }}
 {% endblock %}
+
+{% block modal %}
+    <!-- Place Bid Modal -->
+    <div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentLabel" aria-hidden="true">
+      <div class="modal-dialog max-w-2xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addCommentModal">{{ video.title }} videosu için yorum yap</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                class="h-6 w-6 fill-jacarta-700 dark:fill-white"
+              >
+                <path fill="none" d="M0 0h24v24H0z" />
+                <path
+                  d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="modal-body p-6">
+            <div class="mb-2 flex items-center justify-between">
+              <span class="font-display text-sm font-semibold text-jacarta-700 dark:text-white">Yorumunuz</span>
+            </div>
+
+            <div class="relative mb-2 items-center overflow-hidden rounded-lg dark:border-jacarta-600">
+              <div class="items-center self-stretch border-r border-jacarta-100 bg-jacarta-50 py-2 px-2">
+              <textarea rows="5" cols="30" class="w-full resize-none flex-[3] border-0 focus:ring-inset focus:ring-accent" placeholder="Yorum"></textarea>
+              </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="mt-4 flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="terms"
+                class="h-5 w-5 self-start rounded border-jacarta-200 text-accent checked:bg-accent focus:ring-accent/20 focus:ring-offset-0 dark:border-jacarta-500 dark:bg-jacarta-600"
+              />
+              <label for="terms" class="text-sm dark:text-jacarta-200">
+                  {% trans 'Kullanım koşulları okudum, kabul ediyorum' %}
+                  <a href="{% url 'terms_of_use' %}" target="_blank" class="text-accent">
+                      {% trans 'Kullanım koşulları' %}
+                  </a>
+              </label>
+            </div>
+          </div>
+          <!-- end body -->
+
+          <div class="modal-footer">
+            <div class="flex items-center justify-center space-x-4">
+              <button
+                type="button"
+                class="rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark"
+              >
+                Yorumu Gönder
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
 {% block content %}
-<div class="lg:grid lg:grid-cols-4 lg:gap-2">
-    <div class="col-span-3">
-        <div class="max-w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            {% if video.video_file %}
+<!-- Item -->
+  <section class="relative pt-12 pb-24 lg:py-24">
+        <div class="px-4">
+          <!-- Item -->
+          <div class="md:flex md:flex-wrap">
+            <!-- Image -->
+            <figure class="mb-8 md:w-1/2 lg:w-1/2">
+              {% if video.video_file %}
                 <video class="w-full rounded-lg" controls>
                   <source src="{{video.video_file.url}}" type="video/mp4">
                   Your browser does not support the video tag.
                 </video>
             {% else %}
-                <iframe width="100%" height="700px" src="{{ video.video_url|video_embed }}" title="{{ video.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <iframe class="rounded-lg" width="100%" height="700px" src="{{ video.video_url|video_embed }}" title="{{ video.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             {% endif %}
-            <div class="p-5">
-                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ video.title }}</h5>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{ video.description|safe }}</p>
-                {% if video.link %}
-                    <a href="{{ video.link }}" target="_blank" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Kaynak Link
-                        <svg aria-hidden="true" class="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                    </a>
-                {% endif %}
-                <hr class="mt-3"/>
-                <div class="inline-flex mt-3 rounded-md shadow-sm" role="group">
+
+              <!-- Modal -->
+              <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog !my-0 flex h-full items-center justify-center p-4">
+                  <img src="img/products/item_single_full.jpg" alt="item" />
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-close absolute top-6 right-6"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                    class="h-6 w-6 fill-white"
+                  >
+                    <path fill="none" d="M0 0h24v24H0z" />
+                    <path
+                      d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <!-- end modal -->
+            </figure>
+
+            <!-- Details -->
+            <div class="md:w-3/5 md:basis-auto md:pl-8 lg:w-1/2 lg:pl-[3.75rem]">
+              <!-- Collection / Likes / Actions -->
+              <div class="mb-3 flex">
+                <!-- Collection -->
+                <div class="flex items-center">
+                  <a href="collection.html" class="mr-2 text-sm font-bold text-accent">{{ video.classroom.name }}</a>
+                  <span class="inline-flex text-white h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
+                    data-tippy-content="Verified Collection">
+                    <i class="ti ti-checks"></i>
+                  </span>
+                </div>
+
+                <!-- Likes / Actions -->
+                <div class="ml-auto flex space-x-2">
                     {% if is_video_favorite %}
-                      <a href="{% url 'favorite_video' slug=video.slug %}" class="px-4 py-2 text-sm font-medium text-white bg-red-500 border border-gray-200 rounded-l-lg hover:bg-red-800 hover:text-white focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-                        Favorilerden Kaldır
+                      <a href="{% url 'favorite_video' slug=video.slug %}" class="flex items-center space-x-1 rounded-xl border border-jacarta-100 bg-white py-2 px-4 dark:border-jacarta-600 dark:bg-jacarta-700">
+                        <span class="js-likes relative cursor-pointer before:absolute before:h-4 before:w-4 before:bg-[url('../img/heart-fill.svg')] before:bg-cover before:bg-center before:bg-no-repeat before:opacity-0"
+                          data-tippy-content="Favorite">
+                          <i class="ti ti-heart-filled"></i>
+                        </span>
+                        <span class="text-sm dark:text-jacarta-200">188</span>
                       </a>
                     {% else %}
-                      <a href="{% url 'favorite_video' slug=video.slug %}" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-                        Favorilere Ekle
-                      </a>
+                        <a href="{% url 'favorite_video' slug=video.slug %}" class="flex items-center space-x-1 rounded-xl border border-jacarta-100 bg-white py-2 px-4 dark:border-jacarta-600 dark:bg-jacarta-700">
+                            <span class="js-likes relative cursor-pointer before:absolute before:h-4 before:w-4 before:bg-[url('../img/heart-fill.svg')] before:bg-cover before:bg-center before:bg-no-repeat before:opacity-0"
+                              data-tippy-content="Favorite">
+                              <i class="ti ti-heart-plus"></i>
+                            </span>
+                            <span class="text-sm dark:text-jacarta-200">188</span>
+                        </a>
                     {% endif %}
-                    {% if video.instructor == request.user %}
-                            <a href="{% url 'video_edit' slug=video.slug %}" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-                                Düzenle
-                            </a>
-                            <a href="#" data-modal-target="video-delete-modal" data-modal-toggle="video-delete-modal" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-                                Sil
-                            </a>
-                            <div id="video-delete-modal" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                                <div class="relative w-full max-w-md max-h-full">
-                                    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                        <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-hide="video-delete-modal">
-                                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                                            <span class="sr-only">Close modal</span>
-                                        </button>
-                                        <div class="p-6 text-center">
-                                            <svg aria-hidden="true" class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Videoyu silmek istediğinize emin misiniz?</h3>
-                                            <a href="{% url 'video_delete' pk=video.pk %}" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
-                                                Eminim, sil!
-                                            </a>
-                                            <button data-modal-hide="video-delete-modal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Hayır, vazgeç</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <div class="grid grid-cols-3 bg-gray-100 dark:bg-gray-800 mt-6 px-5 py-2">
-            <div class="col-span-2">
-                <div>
-                    <h4 class="mb-4 text-xl font-extrabold leading-none tracking-tight dark:text-white text-gray-900 md:text-xl dark:text-white">Yorumlar <span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{{ comments.count }} Toplam Yorum</span></h4>
-                </div>
-            </div>
-            <div class="col">
-                <button data-modal-target="comment-modal" data-modal-toggle="comment-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                  Yorum Yap
-                </button>
-                <!-- Main modal -->
-                <div id="comment-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                    <div class="relative w-full max-w-md max-h-full">
-                        <!-- Modal content -->
-                        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                            <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-hide="comment-modal">
-                                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                                <span class="sr-only">Close modal</span>
-                            </button>
-                            <div class="px-6 py-6 lg:px-8">
-                                <h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Yorum Yap</h3>
-                                <form class="space-y-6" method="POST" action="{% url 'video_comment_create' %}">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="video_id" value="{{ video.id }}">
-                                    <div>
-                                        <label for="comment" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Yorumunuz</label>
-                                        <textarea type="text" name="comment" id="comment" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Yorumunuz..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Yorumu Gönder</button>
-                                </form>
-                            </div>
+                {% if video.instructor == request.user %}
+                  <!-- Actions -->
+                    <div class="dropdown rounded-xl border border-jacarta-100 bg-white hover:bg-jacarta-100 dark:border-jacarta-600 dark:bg-jacarta-700 dark:hover:bg-jacarta-600">
+                        <a href="#" class="dropdown-toggle inline-flex h-10 w-10 items-center justify-center text-sm" role="button" id="collectionActions" data-bs-toggle="dropdown" aria-expanded="false">
+                          <svg
+                            width="16"
+                            height="4"
+                            viewBox="0 0 16 4"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="fill-jacarta-500 dark:fill-jacarta-200"
+                          >
+                            <circle cx="2" cy="2" r="2"></circle>
+                            <circle cx="8" cy="2" r="2"></circle>
+                            <circle cx="14" cy="2" r="2"></circle>
+                          </svg>
+                        </a>
+                        <div
+                          class="dropdown-menu dropdown-menu-end z-10 hidden min-w-[200px] whitespace-nowrap rounded-xl bg-white py-4 px-2 text-left shadow-xl dark:bg-jacarta-800"
+                          aria-labelledby="collectionActions"
+                        >
+                          <a href="{% url 'video_edit' slug=video.slug %}"
+                            class="block w-full rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
+                          >
+                            Düzenle
+                          </a>
+                          <hr class="my-2 mx-4 h-px border-0 bg-jacarta-100 dark:bg-jacarta-600" />
+                          <button
+                            class="block w-full rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
+                          >
+                            Refresh Metadata
+                          </button>
+                          <button
+                            class="block w-full rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
+                          >
+                            Share
+                          </button>
+                          <button
+                            class="block w-full rounded-xl px-5 py-2 text-left font-display text-sm transition-colors hover:bg-jacarta-50 dark:text-white dark:hover:bg-jacarta-600"
+                          >
+                            Report
+                          </button>
                         </div>
+                      </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        {% for comment in comments %}
-            <article class="p-6 mb-6 text-base bg-white rounded-lg dark:bg-gray-900">
-                <footer class="flex justify-between items-center mb-2">
-                    <div class="flex items-center">
-                        <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white"><img
-                                class="mr-2 w-6 h-6 rounded-full"
-                                src="{{ comment.author.avatar.url }}"
-                                alt="Michael Gough">{{ comment.author.get_full_name }}</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400"><time pubdate datetime="2022-02-08"
-                                title="{{ comment.created_on }}">{{ comment.created_on }}</time></p>
-                    </div>
-                    <button id="dropdownComment1Button" data-dropdown-toggle="dropdownComment{{ comment.pk }}"
-                        class="inline-flex items-center p-2 text-sm font-medium text-center text-gray-400 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                        type="button">
-                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z">
-                            </path>
-                        </svg>
-                        <span class="sr-only">Comment settings</span>
-                    </button>
-                    <!-- Dropdown menu -->
-                    <div id="dropdownComment{{ comment.pk }}"
-                        class="hidden z-10 w-36 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200"
-                            aria-labelledby="dropdownMenuIconHorizontalButton">
-                            {% if request.user == comment.author %}
-                                <li>
-                                    <a href="#"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Düzenle
-                                    </a>
-                                </li>
-                            {% endif %}
-                            {% if request.user == comment.author or request.user == video.instructor %}
-                                <li>
-                                    <a href="#" data-modal-target="video-comment-delete-modal-{{ comment.pk }}" data-modal-toggle="video-comment-delete-modal-{{ comment.pk }}"
-                                        class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                        Sil
-                                    </a>
-                                </li>
-                            {% endif %}
-                            <li>
-                                <a href="#"
-                                    class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                    Raporla
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="video-comment-delete-modal-{{ comment.pk }}" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                        <div class="relative w-full max-w-md max-h-full">
-                            <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                                <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-hide="video-comment-delete-modal-{{ comment.pk }}">
-                                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                                    <span class="sr-only">Close modal</span>
-                                </button>
-                                <div class="p-6 text-center">
-                                    <svg aria-hidden="true" class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Yorumu silmek istediğinize emin misiniz??</h3>
-                                    <a href="{% url 'video_comment_delete' pk=comment.pk %}" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
-                                        Eminim, sil!
-                                    </a>
-                                    <button data-modal-hide="video-comment-delete-modal-{{ comment.pk }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Hayır, vazgeç</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-                <p class="text-gray-500 dark:text-gray-400">{{ comment.comment|usermention|safe }}</p>
-                <div class="flex items-center mt-4 space-x-4">
-                    <button type="button"
-                        class="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400">
-                        <svg aria-hidden="true" class="mr-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                        Reply
-                    </button>
-                </div>
-            </article>
-        {% empty %}
-            <div class="flex p-4 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800" role="alert">
-              <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-              <span class="sr-only">Info</span>
-              <div>
-                <span class="font-medium">İlk yorumu sen yap!</span> Henüz hiç yorum yapılmamış.
+                {% endif %}
               </div>
+
+              <h1 class="mb-4 font-display text-4xl font-semibold text-jacarta-700 dark:text-white">{{ video.title }}</h1>
+
+              <div class="mb-8 flex items-center space-x-4 whitespace-nowrap">
+                <span class="text-sm text-jacarta-400 dark:text-jacarta-300">{{ video.created_on }}</span>
+              </div>
+
+              <p class="mb-10 dark:text-jacarta-300">
+                  {{ video.description|safe }}
+              </p>
+
+              <!-- Creator / Owner -->
+              <div class="mb-8 mt-4 flex flex-wrap">
+                <div class="mr-8 mb-4 flex">
+                  <figure class="mr-4 shrink-0">
+                    <a href="#" class="relative block">
+                      <img src="{{ video.instructor.avatar.url }}" alt="{{ video.instructor.get_full_name }} avatar" class="w-12 h-12 rounded-2lg" loading="lazy" />
+                      <div
+                        class="absolute -right-3 top-[60%] flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-green dark:border-jacarta-600"
+                        data-tippy-content="Verified Collection"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="24"
+                          height="24"
+                          class="h-[.875rem] w-[.875rem] fill-white"
+                        >
+                          <path fill="none" d="M0 0h24v24H0z"></path>
+                          <path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"></path>
+                        </svg>
+                      </div>
+                    </a>
+                  </figure>
+                  <div class="flex flex-col justify-center">
+                    <span class="block text-sm text-jacarta-400 dark:text-white">
+                        {{ video.instructor.get_full_name }}
+                    </span>
+                    <a href="#" class="block text-accent">
+                      <span class="text-sm font-bold">@{{ video.instructor.username }}</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bid -->
+              <div
+                class="rounded-2lg border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700"
+              >
+                <div class="mb-8 sm:flex sm:flex-wrap">
+                  <!-- Highest bid -->
+                  <div class="sm:w-1/2 sm:pr-4 lg:pr-8">
+                    <div class="block overflow-hidden text-ellipsis whitespace-nowrap">
+                      <span class="text-sm text-jacarta-400 dark:text-jacarta-300">{% trans 'Son Yorum Yapan Kullanıcı' %} </span>
+
+                    </div>
+                    <div class="mt-3 flex">
+                      <figure class="mr-4 shrink-0">
+                        <a href="#" class="relative block">
+                          <img src="{{ comments.last.author.avatar.url }}" alt="avatar" class="w-12 h-12 rounded-2lg" loading="lazy" />
+                        </a>
+                      </figure>
+                      <div>
+                        <div class="flex items-center whitespace-nowrap">
+                          <span class="text-lg font-medium leading-tight tracking-tight text-green">{{ comments.last.author.get_full_name}}</span>
+                        </div>
+                        <span class="text-sm text-jacarta-400 dark:text-jacarta-300">{{comments.last.author.email}}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Countdown -->
+                  <div class="mt-4 dark:border-jacarta-600 sm:mt-0 sm:w-1/2 sm:border-l sm:border-jacarta-100 sm:pl-4 lg:pl-8">
+                    <span class="js-countdown-ends-label text-sm text-jacarta-400 dark:text-jacarta-300">
+                        Toplam Yorum Sayısı
+                    </span>
+                    <div
+                      class="js-countdown-single-timer mt-3 flex space-x-4"
+                      data-countdown="2023-09-07T19:40:30"
+                      data-expired="This auction has ended"
+                    >
+                      <span class="text-jacarta-700 dark:text-white">
+                        {{comments.count}} Yorum
+                      </span>
+
+                    </div>
+                  </div>
+                </div>
+
+                <a href="#" data-bs-toggle="modal" data-bs-target="#addCommentModal" class="inline-block w-full rounded-full bg-accent py-3 px-8 text-center font-semibold text-white shadow-accent-volume transition-all hover:bg-accent-dark">{% trans 'Yorum Yap' %}</a>
+              </div>
+              <!-- end bid -->
             </div>
-        {% endfor %}
-    </div>
-    <div>
-        <div class="w-full p-5 font-medium text-left text-gray-500 border border-b-0 border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
-            <span>Diğer Videolar</span> <br>
-            <small>Buradan bu sınıfa ait diğer videolara erişebilirsiniz.</small>
-        </div>
-        <div>
-            {% for classroom_video in all_videos %}
-                <a href="{% url 'video_detail' slug=classroom_video.slug %}" class="inline-flex gap-2 w-full items-center justify-center p-5 text-base font-medium dark:text-gray-400 dark:hover:text-white {% if classroom_video.slug == video.slug %} bg-blue-700 hover:bg-blue-900 dark:bg-blue-800 dark:hover:bg-blue-900 text-white hover:text-gray-100 {% else %} bg-gray-50 hover:bg-gray-100 text-gray-500 rounded-lg hover:text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 {% endif %}">
-                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1.984v14.032a1 1 0 0 0 1.506.845l12.006-7.016a.974.974 0 0 0 0-1.69L2.506 1.139A1 1 0 0 0 1 1.984Z"/>
+            <!-- end details -->
+          </div>
+
+          <!-- Tabs -->
+          <div class="scrollbar-custom mt-14 overflow-x-auto rounded-lg">
+            <div class="min-w-fit">
+              <!-- Tabs Nav -->
+              <ul class="nav nav-tabs flex items-center" role="tablist">
+                <!-- Offers -->
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link active relative flex items-center whitespace-nowrap py-3 px-6 text-jacarta-400 hover:text-jacarta-700 dark:hover:text-white"
+                    id="offers-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#offers"
+                    type="button"
+                    role="tab"
+                    aria-controls="offers"
+                    aria-selected="true"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      class="mr-1 h-5 w-5 fill-current"
+                    >
+                      <path fill="none" d="M0 0h24v24H0z" />
+                      <path
+                        d="M8 4h13v2H8V4zm-5-.5h3v3H3v-3zm0 7h3v3H3v-3zm0 7h3v3H3v-3zM8 11h13v2H8v-2zm0 7h13v2H8v-2z"
+                      />
                     </svg>
-                    <span class="w-full">{{ classroom_video.title }}</span>
-                    <small>{{ classroom_video.created_on }}</small>
-                    <svg aria-hidden="true" class="w-6 h-6 ml-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </a>
-            {% endfor %}
+                    <span class="font-display text-base font-medium">{% trans 'Diğer Videolar' %}</span>
+                  </button>
+                </li>
+
+                <!-- Properties -->
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link relative flex items-center whitespace-nowrap py-3 px-6 text-jacarta-400 hover:text-jacarta-700 dark:hover:text-white"
+                    id="properties-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#properties"
+                    type="button"
+                    role="tab"
+                    aria-controls="properties"
+                    aria-selected="false"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      height="24"
+                      class="mr-1 h-5 w-5 fill-current"
+                    >
+                      <path fill="none" d="M0 0h24v24H0z" />
+                      <path
+                        d="M6.17 18a3.001 3.001 0 0 1 5.66 0H22v2H11.83a3.001 3.001 0 0 1-5.66 0H2v-2h4.17zm6-7a3.001 3.001 0 0 1 5.66 0H22v2h-4.17a3.001 3.001 0 0 1-5.66 0H2v-2h10.17zm-6-7a3.001 3.001 0 0 1 5.66 0H22v2H11.83a3.001 3.001 0 0 1-5.66 0H2V4h4.17z"
+                      />
+                    </svg>
+                    <span class="font-display text-base font-medium">{% trans 'Yorumlar' %}</span>
+                  </button>
+                </li>
+
+              </ul>
+
+              <!-- Tab Content -->
+              <div class="tab-content">
+                <!-- Offers -->
+                <div class="tab-pane fade show active" id="offers" role="tabpanel" aria-labelledby="offers-tab">
+                  <div class="mb-10 shrink-0 basis-8/12 space-y-5 lg:mb-0 lg:pr-10">
+                      {% for classroom_video in all_videos %}
+                        <a href="{% url 'video_detail' slug=classroom_video.slug %}" class="relative flex items-center rounded-2.5xl border border-jacarta-100 bg-white p-8 transition-shadow hover:shadow-lg dark:border-jacarta-700 dark:bg-jacarta-700">
+                            <figure class="mr-5 self-start">
+                              <i class="ti ti-brand-youtube text-7xl"></i>
+                            </figure>
+
+                            <div>
+                              <h3 class="mb-1 font-display text-base font-semibold text-jacarta-700 dark:text-white">
+                                  {{ classroom_video.title }}
+                              </h3>
+                              <span class="mb-3 block text-sm text-jacarta-500 dark:text-jacarta-200">{{ classroom_video.instructor.get_full_name }}</span>
+                              <span class="block text-xs text-jacarta-300">{{ classroom_video.created_on }}</span>
+                            </div>
+
+                            <div class="ml-auto rounded-full border border-jacarta-100 p-3 dark:border-jacarta-600">
+                              <i class="ti ti-arrow-badge-right-filled"></i>
+                            </div>
+                        </a>
+                      {% endfor %}
+                  </div>
+                </div>
+
+                <!-- Properties -->
+                <div class="tab-pane fade" id="properties" role="tabpanel" aria-labelledby="properties-tab">
+                  {% for comment in comments %}
+                    <!-- Author -->
+                    <div class="mb-16 flex rounded-2.5xl border border-jacarta-100 bg-white p-8 dark:border-jacarta-600 dark:bg-jacarta-700">
+                      <img src="{{ comment.author.avatar.url }}" alt="author" class="mr-4 h-16 w-16 shrink-0 self-start rounded-lg md:mr-8 md:h-[9rem] md:w-[9rem]"/>
+                      <div>
+                        <span class="mb-3 mt-2 block font-display text-base text-jacarta-700 dark:text-white">{{ comment.author.get_full_name }}</span>
+                        <p class="mb-4 dark:text-jacarta-300">
+                            {{ comment.comment }}
+                        </p>
+                      </div>
+                    </div>
+
+                  {% empty %}
+                    <div class="flex p-4 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800" role="alert">
+                      <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                      <span class="sr-only">Info</span>
+                      <div>
+                        <span class="font-medium">İlk yorumu sen yap!</span> Henüz hiç yorum yapılmamış.
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              <!-- end tab content -->
+            </div>
+          </div>
+          <!-- end tabs -->
         </div>
-    </div>
-</div>
+  </section>
+      <!-- end item -->
 {% endblock %}

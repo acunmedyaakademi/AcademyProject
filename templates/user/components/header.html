@@ -1,66 +1,253 @@
 {% load static %}
+{% load i18n %}
 {% load site_settings %}
 {% get_general_settings as general_settings %}
 {% url 'homepage' as homepage %}
 {% url 'videos_list' as video_list %}
 {% load group_filters %}
-<header>
-    <nav class="bg-gray-100 border-gray-200 py-2.5 dark:bg-gray-800">
-        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-            <a href="{% url 'homepage' %}" class="flex items-center">
-                <img src="{% static 'base/img/acunmedya_akademi_logo.png' %}" class="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
-                <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Acunmedya Akademi</span>
-            </a>
-            <div class="flex gap-4 items-center lg:order-2">
-                <button type="button" class="flex mx-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="dropdown">
-                  <span class="sr-only">Open user menu</span>
-                  <img class="w-8 h-8 rounded-full" src="{{ request.user.avatar.url }}" alt="user photo">
-              </button>
-              <!-- Dropdown menu -->
-              <div class="hidden z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown">
-                  <div class="py-3 px-4">
-                      <span class="block text-sm font-semibold text-gray-900 dark:text-white">{{ request.user.get_full_name }}</span>
-                      <span class="block text-sm font-light text-gray-500 truncate dark:text-gray-400">{{ request.user.email }}</span>
-                  </div>
-                  <ul class="py-1 font-light text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
-                      {% if request.user|has_group:'Eğitmen' %}
-                          <li>
-                              <a href="{% url 'instructor_panel' %}" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Eğitmen Paneli</a>
-                          </li>
-                          <li>
-                              <a href="{% url 'video_upload' %}" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Video Ekle</a>
-                          </li>
-                      {% endif %}
-                      <li>
-                          <a href="{% url 'profile' %}" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Profilim</a>
-                      </li>
-                      <li>
-                          <a href="{% url 'password_change' %}" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Şifre Değiştir</a>
-                      </li>
-                  </ul>
-                  <ul class="py-1 font-light text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
-                      <li>
-                          <a href="{% url 'favorite_videos' %}" class="flex items-center py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"><svg class="mr-2 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg> Favorilerim</a>
-                      </li>
-                  </ul>
-                  <ul class="py-1 font-light text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
-                      <li>
-                          <a href="{% url 'logout' %}" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Çıkış Yap</a>
-                      </li>
-                  </ul>
-              </div>
-                <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
-                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                </button>
-                <a href="https://github.com/furkannozay/AcademyProject/issues" target="_blank" class="text-white ms-3 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Hata Bildir</a>
-                <button data-collapse-toggle="mobile-menu-2" type="button" class="inline-flex items-center p-2 ml-1 text-sm text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
-                    <span class="sr-only">Open main menu</span>
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
-                    <svg class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
+
+
+            <!-- Header -->
+
+            <div id="header"
+                 class="mdk-header js-mdk-header mb-0"
+                 data-fixed
+                 data-effects="waterfall">
+                <div class="mdk-header__content">
+
+                    <div class="navbar navbar-expand navbar-light bg-white border-bottom"
+                         id="default-navbar"
+                         data-primary>
+                        <div class="container page__container">
+
+                            <!-- Navbar Brand -->
+                            <a href="{% url 'homepage' %}"
+                               class="navbar-brand mr-16pt">
+
+                                <span class="avatar avatar-sm navbar-brand-icon mr-0 mr-lg-8pt">
+                                    <span class="avatar-title rounded bg-dark">
+                                        <img src="{% static 'base/img/acunmedya_akademi_logo.png' %}" alt="logo" class="img-fluid" />
+                                    </span>
+                                </span>
+
+                                <span class="d-none d-sm-block small">Acunmedya Akademi</span>
+                            </a>
+
+                            <!-- Navbar toggler -->
+                            <button class="navbar-toggler w-auto mr-16pt d-block rounded-0" type="button" data-toggle="sidebar">
+                                <span class="material-icons">short_text</span>
+                            </button>
+
+                            {% include 'user/components/navbar.html' %}
+
+                            <form class="search-form form-control-rounded navbar-search d-none d-lg-flex mr-16pt"
+                                  action="index.html"
+                                  style="max-width: 230px">
+                                <button class="btn"
+                                        type="submit"><i class="material-icons">search</i></button>
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="Search ...">
+                            </form>
+
+                            <div class="nav navbar-nav ml-auto mr-0 flex-nowrap d-flex">
+                                {% if request.user.is_authenticated %}
+                                <!-- Notifications dropdown -->
+                                <div class="nav-item dropdown dropdown-notifications dropdown-xs-down-full"
+                                     data-toggle="tooltip"
+                                     data-title="Messages"
+                                     data-placement="bottom"
+                                     data-boundary="window">
+                                    <button class="nav-link btn-flush dropdown-toggle"
+                                            type="button"
+                                            data-toggle="dropdown"
+                                            data-caret="false">
+                                        <i class="material-icons icon-24pt">mail_outline</i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <div data-perfect-scrollbar
+                                             class="position-relative">
+                                            <div class="dropdown-header"><strong>Messages</strong></div>
+                                            <div class="list-group list-group-flush mb-0">
+
+                                                <a href="javascript:void(0);"
+                                                   class="list-group-item list-group-item-action unread">
+                                                    <span class="d-flex align-items-center mb-1">
+                                                        <small class="text-black-50">5 minutes ago</small>
+
+                                                        <span class="ml-auto unread-indicator bg-accent"></span>
+
+                                                    </span>
+                                                    <span class="d-flex">
+                                                        <span class="avatar avatar-xs mr-2">
+                                                            <img src="../../public/images/people/110/woman-5.jpg"
+                                                                 alt="people"
+                                                                 class="avatar-img rounded-circle">
+                                                        </span>
+                                                        <span class="flex d-flex flex-column">
+                                                            <strong class="text-black-100">Michelle</strong>
+                                                            <span class="text-black-70">Clients loved the new design.</span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+
+                                                <a href="javascript:void(0);"
+                                                   class="list-group-item list-group-item-action">
+                                                    <span class="d-flex align-items-center mb-1">
+                                                        <small class="text-black-50">5 minutes ago</small>
+
+                                                    </span>
+                                                    <span class="d-flex">
+                                                        <span class="avatar avatar-xs mr-2">
+                                                            <img src="../../public/images/people/110/woman-5.jpg"
+                                                                 alt="people"
+                                                                 class="avatar-img rounded-circle">
+                                                        </span>
+                                                        <span class="flex d-flex flex-column">
+                                                            <strong class="text-black-100">Michelle</strong>
+                                                            <span class="text-black-70">🔥 Superb job..</span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- // END Notifications dropdown -->
+
+                                <!-- Notifications dropdown -->
+                                <div class="nav-item ml-16pt dropdown dropdown-notifications dropdown-xs-down-full"
+                                     data-toggle="tooltip"
+                                     data-title="Notifications"
+                                     data-placement="bottom"
+                                     data-boundary="window">
+                                    <button class="nav-link btn-flush dropdown-toggle"
+                                            type="button"
+                                            data-toggle="dropdown"
+                                            data-caret="false">
+                                        <i class="material-icons">notifications_none</i>
+                                        <span class="badge badge-notifications badge-accent">2</span>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <div data-perfect-scrollbar
+                                             class="position-relative">
+                                            <div class="dropdown-header"><strong>System notifications</strong></div>
+                                            <div class="list-group list-group-flush mb-0">
+
+                                                <a href="javascript:void(0);"
+                                                   class="list-group-item list-group-item-action unread">
+                                                    <span class="d-flex align-items-center mb-1">
+                                                        <small class="text-black-50">3 minutes ago</small>
+
+                                                        <span class="ml-auto unread-indicator bg-accent"></span>
+
+                                                    </span>
+                                                    <span class="d-flex">
+                                                        <span class="avatar avatar-xs mr-2">
+                                                            <span class="avatar-title rounded-circle bg-light">
+                                                                <i class="material-icons font-size-16pt text-accent">account_circle</i>
+                                                            </span>
+                                                        </span>
+                                                        <span class="flex d-flex flex-column">
+
+                                                            <span class="text-black-70">Your profile information has not been synced correctly.</span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+
+                                                <a href="javascript:void(0);"
+                                                   class="list-group-item list-group-item-action">
+                                                    <span class="d-flex align-items-center mb-1">
+                                                        <small class="text-black-50">5 hours ago</small>
+
+                                                    </span>
+                                                    <span class="d-flex">
+                                                        <span class="avatar avatar-xs mr-2">
+                                                            <span class="avatar-title rounded-circle bg-light">
+                                                                <i class="material-icons font-size-16pt text-primary">group_add</i>
+                                                            </span>
+                                                        </span>
+                                                        <span class="flex d-flex flex-column">
+                                                            <strong class="text-black-100">Adrian. D</strong>
+                                                            <span class="text-black-70">Wants to join your private group.</span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+
+                                                <a href="javascript:void(0);"
+                                                   class="list-group-item list-group-item-action">
+                                                    <span class="d-flex align-items-center mb-1">
+                                                        <small class="text-black-50">1 day ago</small>
+
+                                                    </span>
+                                                    <span class="d-flex">
+                                                        <span class="avatar avatar-xs mr-2">
+                                                            <span class="avatar-title rounded-circle bg-light">
+                                                                <i class="material-icons font-size-16pt text-warning">storage</i>
+                                                            </span>
+                                                        </span>
+                                                        <span class="flex d-flex flex-column">
+
+                                                            <span class="text-black-70">Your deploy was successful.</span>
+                                                        </span>
+                                                    </span>
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- // END Notifications dropdown -->
+
+                                <div class="nav-item dropdown">
+                                    <a href="#"
+                                       class="nav-link d-flex align-items-center dropdown-toggle"
+                                       data-toggle="dropdown"
+                                       data-caret="false">
+
+                                        <span class="avatar avatar-sm mr-8pt2">
+
+                                            <span class="avatar-title rounded-circle bg-primary"><i class="material-icons">account_box</i></span>
+
+                                        </span>
+
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <div class="dropdown-header"><strong>Account</strong></div>
+                                        <a class="dropdown-item"
+                                           href="{% url 'profile_update' %}">{% trans 'Profili Düzenle' %}</a>
+                                        <a class="dropdown-item"
+                                           href="billing.html">Billing</a>
+                                        <a class="dropdown-item"
+                                           href="billing-history.html">Payments</a>
+                                        <a class="dropdown-item"
+                                           href="{% url 'logout' %}">Logout</a>
+                                    </div>
+                                </div>
+                                {% else %}
+
+                                <ul class="nav navbar-nav ml-auto mr-0">
+                                    <li class="nav-item">
+                                        <a href="login.html"
+                                           class="nav-link"
+                                           data-toggle="tooltip"
+                                           data-title="Login"
+                                           data-placement="bottom"
+                                           data-boundary="window"><i class="material-icons">lock_open</i></a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="signup.html"
+                                           class="btn btn-outline-secondary">Get Started</a>
+                                    </li>
+                                </ul>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
             </div>
-            {% include 'user/components/navbar.html' %}
-        </div>
-    </nav>
-</header>
+
+            <!-- // END Header -->
