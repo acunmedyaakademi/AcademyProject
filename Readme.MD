@@ -51,7 +51,7 @@ Admin: Tabler Theme
 - Repoyu klonlayın
 
     ```bash
-    git clone https://github.com/furkannozay/AcademyProject.git
+    git clone https://github.com/acunmedyaakademi/AcademyProject.git
     ```
 
 #### 2. Adım
